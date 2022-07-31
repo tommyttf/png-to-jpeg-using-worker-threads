@@ -1,5 +1,6 @@
 import Koa from 'koa';
 import cors from '@koa/cors';
+import logger from 'koa-logger';
 
 import Yaml from 'js-yaml';
 
@@ -19,6 +20,7 @@ const { port } = <{ port: number }>Yaml.load(fs.readFileSync(configPath, 'utf8')
 const app = new Koa();
 
 app
+  .use(logger())
   .use(cors())
   .use(router.routes())
   .use(router.allowedMethods())
