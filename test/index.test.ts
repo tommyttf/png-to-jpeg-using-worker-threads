@@ -51,4 +51,15 @@ describe('Test koa server', () => {
         done(err);
       })
   });
+  test('Router throw error', done => {
+    request(koaApp.getServer()).get('/err')
+      .expect(500)
+      .expect(response => {
+        expect(response.text).toBe('Testing');
+        done();
+      })
+      .catch(err => {
+        done(err);
+      })
+  })
 });

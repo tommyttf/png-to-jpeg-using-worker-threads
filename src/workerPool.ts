@@ -77,7 +77,10 @@ class WorkerPool extends EventEmitter {
   }
 
   async close() {
-    await Promise.all(this.workers.map(worker => worker.terminate));
+    await Promise.all(this.workers.map(worker => {
+      worker.unref();
+      return worker.terminate()
+    }));
   }
 }
 

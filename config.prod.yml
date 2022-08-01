@@ -1,1 +1,2 @@
 port: 32768
+numThreads: 8

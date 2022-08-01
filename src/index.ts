@@ -7,9 +7,9 @@ import KoaApp, { IConfig } from "./server";
 
 const configPath = path.join(
   __dirname,
-  process.env.NODE_ENV === 'development'
-    ? '../config.dev.yml'
-    : '../config.prod.yml',
+  process.env.NODE_ENV === 'production'
+    ? '../config.prod.yml'
+    : '../config.dev.yml',
 );
 const config = <IConfig>Yaml.load(fs.readFileSync(configPath, 'utf8'));
 

@@ -14,22 +14,25 @@ export interface IKoaContent {
 }
 
 export interface IConfig {
+  numThreads: number;
   port: number;
 }
 
-const fileExt = process.env.NODE_ENV === 'development' ? '.ts' : '.js';
+const fileExt = process.env.NODE_ENV === 'production' ? '.js' : '.ts';
 
 export default class KoaApp {
   private config: IConfig;
   private readonly workerPool: WorkerPool;
 
-  private server: Server;
+  private readonly server: Server;
 
   constructor(config: IConfig) {
     this.config = config;
 
+    // max number of threads will be number of cpu
+    const numThreads = Math.min(config.numThreads || 1, os.cpus().length)
     this.workerPool = new WorkerPool(
-      os.cpus().length,
+      numThreads,
       path.join(__dirname, './worker.cjs'),
       {
         workerData: {
@@ -38,7 +41,7 @@ export default class KoaApp {
         }
       }
     );
-    console.log(`init worker pool with ${os.cpus().length} workers`)
+    console.log(`init worker pool with ${numThreads} workers`)
 
     const app = new Koa<any, IKoaContent>();
     app.context.workerPool = this.workerPool;

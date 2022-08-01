@@ -3,9 +3,10 @@
   "type": "commonjs",
   "scripts": {
     "dev": "NODE_ENV=development tsnd --respawn src/index.ts",
-    "start": "rm -rf dist && tsc --project tsconfig.json && cp src/workerRunTs.cjs dist/workerRunTs.cjs && node dist/index.js",
+    "start": "rm -rf dist && tsc --project tsconfig.json && cp src/workerRunTs.cjs dist/workerRunTs.cjs && NODE_ENV=production node dist/index.js",
     "lint": "eslint . --ext .ts",
-    "test": "NODE_ENV=development jest --coverage"
+    "test": "NODE_ENV=development jest --coverage",
+    "clearUploadImg": "rm -rf uploads/png/*"
   },
   "dependencies": {
     "@koa/cors": "^3.3.0",
