@@ -1,4 +1,6 @@
 const { workerData } = require('worker_threads');
 
-require('ts-node').register();
-require(workerData.tsPath);
+if (workerData.childWorkerPath.endsWith('.ts')) {
+  require('ts-node').register();
+}
+require(workerData.childWorkerPath);
