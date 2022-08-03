@@ -1,26 +1,17 @@
-import Koa from 'koa';
-import cors from '@koa/cors';
-
 import Yaml from 'js-yaml';
 
 import path from 'path';
 import fs from 'fs';
 
-import router from './router';
+import KoaApp, { IConfig } from "./server";
 
 const configPath = path.join(
   __dirname,
-  process.env.NODE_ENV === 'development'
-    ? '../config.dev.yml'
-    : '../config.prod.yml',
+  process.env.NODE_ENV === 'production'
+    ? '../config.prod.yml'
+    : '../config.dev.yml',
 );
-const { port } = <{ port: number }>Yaml.load(fs.readFileSync(configPath, 'utf8'));
+const config = <IConfig>Yaml.load(fs.readFileSync(configPath, 'utf8'));
 
-const app = new Koa();
-
-app
-  .use(cors())
-  .use(router.routes())
-  .use(router.allowedMethods())
-  .listen(port);
-console.log(`App listening on port ${port}`);
+const koaApp = new KoaApp(config);
+export { koaApp };

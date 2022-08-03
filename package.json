@@ -1,32 +1,40 @@
 {
-  "name": "q1-png-to-jpeg",
+  "name": "png-to-jpeg-using-worker-threads",
+  "version": "1.0.0",
+  "description": "koa server transforming png to jpeg using worker threads",
+  "type": "commonjs",
   "scripts": {
-    "dev": "NODE_ENV=development tsnd --respawn src/index.ts",
-    "start": "tsnd --respawn src/index.ts",
-    "lint": "eslint . --ext .ts",
-    "test": "jest"
+    "dev": "npm run clearTempImg && NODE_ENV=development tsnd --respawn src/index.ts",
+    "start": "rm -rf dist uploads/png/* && tsc --project tsconfig.json && cp src/worker.cjs dist/worker.cjs && NODE_ENV=production node dist/index.js",
+    "lint": "eslint . --ext .ts --fix",
+    "test": "npm run clearTempImg && NODE_ENV=development jest --coverage",
+    "clearTempImg": "rm -rf uploads/png/*",
+    "test:speed:useWorker": "NOT_USE_WORKER=false ts-node speed/index.ts",
+    "test:speed:notUseWorker": "NOT_USE_WORKER=true ts-node speed/index.ts"
   },
   "dependencies": {
     "@koa/cors": "^3.3.0",
+    "@types/supertest": "^2.0.12",
+    "jimp": "^0.16.1",
     "js-yaml": "^4.1.0",
     "koa": "^2.13.4",
     "koa-body": "^5.0.0",
-    "koa-router": "^12.0.0",
-    "koa-static": "^5.0.0",
-    "sharp": "^0.30.7",
-    "ts-node": "^10.9.1"
+    "koa-logger": "^3.2.1",
+    "koa-router": "^12.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^28.1.6",
     "@types/js-yaml": "^4.0.5",
     "@types/koa": "^2.13.5",
     "@types/koa-router": "^7.4.4",
-    "@types/koa-static": "^4.0.2",
     "@types/node": "^14",
-    "@types/sharp": "^0.30.4",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
+    "axios": "^0.27.2",
     "eslint": "^8.20.0",
     "jest": "^28.1.3",
+    "supertest": "^6.2.4",
+    "ts-jest": "^28.0.7",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.7.4"
   },

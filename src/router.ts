@@ -1,14 +1,21 @@
+import { DefaultState } from "koa";
 import Router from 'koa-router';
 import koaBody from 'koa-body';
-
-import Sharp from 'sharp';
 
 import path from 'path';
 import fs from 'fs';
 
-const router = new Router();
+import { Buffer } from "buffer";
+import { IKoaContent } from "./server";
+import { transform } from "./pngToJpeg/byJimp";
+
+const router = new Router<DefaultState, IKoaContent>();
 
 router
+  .get('/err', () => {
+    // for test case `if router throw error`
+    throw new Error('Testing');
+  })
   .post('/to_jpeg', koaBody({
     multipart: true,
     formidable: {
@@ -16,23 +23,53 @@ router
       keepExtensions: true,
     },
   }), async (ctx) => {
-    // console.log(ctx);
-    const pngFile = ctx.request.files.pngImg;
+    // console.log(ctx.request.body);
+    const { pngFile } = ctx.request.files;
+    if (pngFile === undefined) {
+      ctx.body = 'Please upload png with field name "pngFile"'
+      ctx.status = 400;
+      return;
+    }
+
     if (Array.isArray(pngFile)) {
-      // just consider upload 1 png file per request
+      ctx.body = 'Please upload 1 png at a time'
       ctx.status = 400;
       return;
     }
 
     // console.log('pngFile.filepath : ', pngFile.filepath);
     if (!fs.existsSync(pngFile.filepath)) {
-      ctx.status = 400;
+      ctx.body = 'Something wrong with upload dir. Please try again';
+      ctx.status = 500;
       return;
     }
 
-    ctx.body = await Sharp(pngFile.filepath).jpeg().toBuffer();
-    ctx.status = 200;
-    ctx.type = 'image/jpeg';
+    await new Promise<void>((resolve, reject) => {
+      if (ctx.request.body.notUseWorker !== 'true') {
+        ctx.workerPool.runTask(pngFile.filepath, (err, result) => {
+          // console.log(err, result);
+          if (err) {
+            ctx.body = 'png transform error';
+            ctx.status = 500;
+            reject(err);
+          } else {
+            ctx.body = Buffer.from(result);
+            ctx.status = 200;
+            ctx.type = 'image/jpeg';
+            console.log('i : ', ctx.request.body.i);
+            resolve();
+          }
+        });
+      } else {
+        transform(pngFile.filepath).then((result) => {
+          ctx.body = result;
+          ctx.status = 200;
+          ctx.type = 'image/jpeg';
+          console.log('i : ', ctx.request.body.i);
+          resolve();
+        });
+      }
+    })
   });
 
 export default router;
