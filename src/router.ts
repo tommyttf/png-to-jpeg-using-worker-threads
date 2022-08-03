@@ -1,3 +1,4 @@
+import { DefaultState } from "koa";
 import Router from 'koa-router';
 import koaBody from 'koa-body';
 
@@ -6,11 +7,13 @@ import fs from 'fs';
 
 import { Buffer } from "buffer";
 import { IKoaContent } from "./server";
+import { transform } from "./pngToJpeg/byJimp";
 
-const router = new Router<any, IKoaContent>();
+const router = new Router<DefaultState, IKoaContent>();
 
 router
   .get('/err', () => {
+    // for test case `if router throw error`
     throw new Error('Testing');
   })
   .post('/to_jpeg', koaBody({
@@ -21,11 +24,6 @@ router
     },
   }), async (ctx) => {
     // console.log(ctx.request.body);
-    // if (ctx.request.body.fast) {
-    //   ctx.body = 'quick response';
-    //   ctx.status = 200;
-    //   return;
-    // }
     const { pngFile } = ctx.request.files;
     if (pngFile === undefined) {
       ctx.body = 'Please upload png with field name "pngFile"'
@@ -47,19 +45,30 @@ router
     }
 
     await new Promise<void>((resolve, reject) => {
-      ctx.workerPool.runTask(pngFile.filepath, (err, result) => {
-        // console.log(err, result);
-        if (err) {
-          ctx.body = 'png transform error';
-          ctx.status = 500;
-          reject(err);
-        } else {
-          ctx.body = Buffer.from(result);
+      if (ctx.request.body.notUseWorker !== 'true') {
+        ctx.workerPool.runTask(pngFile.filepath, (err, result) => {
+          // console.log(err, result);
+          if (err) {
+            ctx.body = 'png transform error';
+            ctx.status = 500;
+            reject(err);
+          } else {
+            ctx.body = Buffer.from(result);
+            ctx.status = 200;
+            ctx.type = 'image/jpeg';
+            console.log('i : ', ctx.request.body.i);
+            resolve();
+          }
+        });
+      } else {
+        transform(pngFile.filepath).then((result) => {
+          ctx.body = result;
           ctx.status = 200;
           ctx.type = 'image/jpeg';
+          console.log('i : ', ctx.request.body.i);
           resolve();
-        }
-      })
+        });
+      }
     })
   });
 

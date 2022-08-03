@@ -24,7 +24,7 @@ class WorkerPool extends EventEmitter {
   private readonly workers: Array<Worker>;
   private freeWorkers: Array<Worker>;
 
-  constructor(numThreads: number, workerFile: string, options: WorkerOptions) {
+  constructor(numThreads: number, workerFile: string, options?: WorkerOptions) {
     super();
     this.workers = [];
     this.freeWorkers = [];
@@ -35,7 +35,7 @@ class WorkerPool extends EventEmitter {
     console.log(`Created ${numThreads} workers`);
   }
 
-  addNewWorker(workerFile: string, options: WorkerOptions) {
+  addNewWorker(workerFile: string, options?: WorkerOptions) {
     const worker = new Worker(workerFile, options);
     worker.on('message', (result) => {
       // In case of success: Call the callback that was passed to `runTask`,

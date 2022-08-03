@@ -1,4 +1,4 @@
-import Koa from "koa";
+import Koa, { DefaultState } from "koa";
 import logger from 'koa-logger';
 import cors from '@koa/cors';
 
@@ -41,9 +41,12 @@ export default class KoaApp {
         }
       }
     );
+    // // if there will be a lot of tasks incoming, better set larger max listeners
+    // this.workerPool.setMaxListeners(50);
+
     console.log(`init worker pool with ${numThreads} workers`)
 
-    const app = new Koa<any, IKoaContent>();
+    const app = new Koa<DefaultState, IKoaContent>();
     app.context.workerPool = this.workerPool;
 
     this.server = app

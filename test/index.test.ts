@@ -10,8 +10,8 @@ afterAll(done => {
     });
 });
 
-describe('Test koa server', () => {
-  test('transform 1 png to jpeg', done => {
+describe('Koa server', () => {
+  it('should transform 1 png to jpeg with worker', done => {
     request(koaApp.getServer()).post('/to_jpeg')
       .attach('pngFile', path.join(__dirname, './png/test0.png'))
       .expect(200)
@@ -25,7 +25,22 @@ describe('Test koa server', () => {
       });
   });
 
-  test('Upload with wrong field name', done => {
+  it('should transform 1 png to jpeg without worker', done => {
+    request(koaApp.getServer()).post('/to_jpeg')
+      .field('notUseWorker', 'true')
+      .attach('pngFile', path.join(__dirname, './png/test0.png'))
+      .expect(200)
+      .expect('Content-Type', 'image/jpeg')
+      .end(err => {
+        if (err) {
+          done(err);
+        } else {
+          done();
+        }
+      });
+  });
+
+  test('if upload with wrong field name', done => {
     request(koaApp.getServer()).post('/to_jpeg')
       .attach('wrong', path.join(__dirname, './png/test0.png'))
       .expect(400)
@@ -38,7 +53,7 @@ describe('Test koa server', () => {
       })
   });
 
-  test('transform multiple png', done => {
+  test('if transform multiple png', done => {
     request(koaApp.getServer()).post('/to_jpeg')
       .attach('pngFile', path.join(__dirname, './png/test0.png'))
       .attach('pngFile', path.join(__dirname, './png/test0.png'))
@@ -51,7 +66,8 @@ describe('Test koa server', () => {
         done(err);
       })
   });
-  test('Router throw error', done => {
+
+  test('if router throw error', done => {
     request(koaApp.getServer()).get('/err')
       .expect(500)
       .expect(response => {
