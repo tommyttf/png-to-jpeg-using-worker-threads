@@ -1,6 +1,6 @@
 {
   "name": "png-to-jpeg-using-worker-threads",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "koa server transforming png to jpeg using worker threads",
   "type": "commonjs",
   "scripts": {
