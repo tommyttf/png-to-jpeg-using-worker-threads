@@ -1,6 +1,6 @@
 {
   "name": "png-to-jpeg-using-worker-threads",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "koa server transforming png to jpeg using worker threads",
   "type": "commonjs",
   "scripts": {
@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@koa/cors": "^3.3.0",
-    "@types/supertest": "^2.0.12",
     "jimp": "^0.16.1",
     "js-yaml": "^4.1.0",
     "koa": "^2.13.4",
@@ -28,11 +27,13 @@
     "@types/koa": "^2.13.5",
     "@types/koa-router": "^7.4.4",
     "@types/node": "^14",
+    "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "axios": "^0.27.2",
     "eslint": "^8.20.0",
     "jest": "^28.1.3",
+    "jest-junit": "^14.0.0",
     "supertest": "^6.2.4",
     "ts-jest": "^28.0.7",
     "ts-node-dev": "^2.0.0",
