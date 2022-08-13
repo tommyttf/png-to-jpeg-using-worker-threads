@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: ls -l uploads/png
+      - run: ls -l
       - run: npm ci
       - run: npm test
 
